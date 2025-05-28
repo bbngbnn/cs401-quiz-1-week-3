@@ -48,33 +48,18 @@ class GamesController extends Controller
      */
     public function destroy(string $id)
     {
-        $filePath = base_path('database/datasource.php');
-        $gameList = include($filePath);
-
-        $originalCount = count($gameList);
-
-        $updatedList = array_filter($gameList, function ($game) use ($id) {
-            return $game['id'] != $id;
+        // Step 1: Simulate deletion by filtering the game list
+        $updatedList = array_filter($this->game_list, function ($game) use ($id) {
+            return $game['id'] != $id; // Keep all games EXCEPT the one with the matching ID
         });
 
-        if (count($updatedList) === $originalCount) {
-            return response("Game with ID $id not found.\n", 404)
-                ->header('Content-Type', 'text/plain');
-        }
+        // Step 2: Reindex the array for consistency
+        $updatedList = array_values($updatedList);
 
-        // Convert back to PHP code and overwrite the file
-        $phpCode = "<?php\nreturn " . var_export(array_values($updatedList), true) . ";\n";
-        file_put_contents($filePath, $phpCode);
-
-        // Build response
-        $output = "Games List\n";
-        foreach ($updatedList as $game) {
-            $output .= "ID: {$game['id']}\n";
-            $output .= "{$game['title']}\n";
-            $output .= "{$game['developer']}\n\n";
-        }
-
-        return response($output, 200)
-            ->header('Content-Type', 'text/plain');
+        // Step 3: Return JSON with a message and the updated list
+        return response()->json([
+            'message' => "Game with ID $id deleted successfully.",
+            'games' => $updatedList
+        ], 200);
     }
 }
