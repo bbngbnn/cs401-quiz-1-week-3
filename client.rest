@@ -3,21 +3,3 @@ Accept: application/json
 ###
 DELETE http://127.0.0.1:8000/games/3
 X-CSRF-TOKEN: {"_token":"JUwZFNQka3ymHmnFq0dJ5PjdbrLFCENfkwNiMQCX"}
-
-GET http://127.0.0.1:8000/
-Content-Type: application/json
-###
-GET http://127.0.0.1:8000/games/1
-Content-Type: application/json
-###
-GET http://127.0.0.1:8000/games/2
-Content-Type: application/json
-###
-GET http://127.0.0.1:8000/games/3
-Content-Type: application/json
-###
-GET http://127.0.0.1:8000/games/4
-Content-Type: application/json
-###
-GET http://127.0.0.1:8000/games/5
-Content-Type: application/json

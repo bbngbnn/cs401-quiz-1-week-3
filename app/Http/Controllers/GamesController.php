@@ -48,12 +48,33 @@ class GamesController extends Controller
      */
     public function destroy(string $id)
     {
-        $results = array_filter($this->game_list, function ($game) use ($id) {
-            return $game['id'] == $id;
+        $filePath = base_path('database/datasource.php');
+        $gameList = include($filePath);
+
+        $originalCount = count($gameList);
+
+        $updatedList = array_filter($gameList, function ($game) use ($id) {
+            return $game['id'] != $id;
         });
-        return response()->json([
-            'message' => 'Record Successfull Deleted.',
-            'content' => $results
-        ], 200);
+
+        if (count($updatedList) === $originalCount) {
+            return response("Game with ID $id not found.\n", 404)
+                ->header('Content-Type', 'text/plain');
+        }
+
+        // Convert back to PHP code and overwrite the file
+        $phpCode = "<?php\nreturn " . var_export(array_values($updatedList), true) . ";\n";
+        file_put_contents($filePath, $phpCode);
+
+        // Build response
+        $output = "Games List\n";
+        foreach ($updatedList as $game) {
+            $output .= "ID: {$game['id']}\n";
+            $output .= "{$game['title']}\n";
+            $output .= "{$game['developer']}\n\n";
+        }
+
+        return response($output, 200)
+            ->header('Content-Type', 'text/plain');
     }
 }
