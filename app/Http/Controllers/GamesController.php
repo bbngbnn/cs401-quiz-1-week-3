@@ -19,6 +19,7 @@ class GamesController extends Controller
     public function index()
     {
         //Step 3. Your code here
+        return view('games.index', ['games' => $this->game_list]);
     }
 
     /**
@@ -26,11 +27,20 @@ class GamesController extends Controller
      */
     public function show(string $id)
     {
-        //Step 4.
-        $results = array_filter($this->game_list, function ($game) use ($id) {
-            return $game['id'] != $id;
+        // Step 4: Find the game by ID
+        $filtered = array_filter($this->game_list, function ($game) use ($id) {
+            return $game['id'] == $id; // correct comparison
         });
-        return view('games.show', ['games' => $results]);
+
+        $filtered = array_values($filtered); // Reindex the array
+
+        if (empty($filtered)) {
+            abort(404, 'Game not found.');
+        }
+
+        $game = $filtered[0]; // ✅ Now this is safe
+
+        return view('games.show', ['game' => $game]); // ✅ Use 'game' singular
     }
 
     /**
